@@ -1,0 +1,67 @@
+
+
+
+import java.util.Random;
+import java.util.Scanner;
+
+public class CountryGuessingGame {
+    private static final int GRID_SIZE = 7;
+    private static final int NUM_COUNTRIES = 3;
+    private static final String[] COUNTRIES = {"USA", "Canada", "Mexico"};
+
+    public static void main(String[] args) {
+        String[][] grid = new String[GRID_SIZE][GRID_SIZE];
+        String[] countryLocations = placeCountries(grid);
+        playGame(grid, countryLocations);
+    }
+
+    private static String[] placeCountries(String[][] grid) {
+        Random random = new Random();
+        String[] countryLocations = new String[NUM_COUNTRIES];
+        for (int i = 0; i < NUM_COUNTRIES; i++) {
+            int row = random.nextInt(GRID_SIZE);
+            int col = random.nextInt(GRID_SIZE);
+            grid[row][col] = COUNTRIES[i];
+            countryLocations[i] = row + "," + col;
+        }
+        return countryLocations;
+    }
+
+    private static void playGame(String[][] grid, String[] countryLocations) {
+        Scanner scanner = new Scanner(System.in);
+        int numGuesses = 0;
+        while (true) {
+            System.out.println("Enter your guess (e.g., a5, c2): ");
+            String guess = scanner.next();
+            int row = guess.charAt(0) - 'a';
+            int col = Integer.parseInt(guess.substring(1)) - 1;
+            if (row < 0 || row >= GRID_SIZE || col < 0 || col >= GRID_SIZE) {
+                System.out.println("Invalid guess. Try again!");
+                continue;
+            }
+            numGuesses++;
+            if (grid[row][col] != null) {
+                System.out.println("Hit!");
+                grid[row][col] = null;
+                if (isGameWon(grid, countryLocations)) {
+                    System.out.println("Congratulations! You won in " + numGuesses + " guesses.");
+                    break;
+                }
+            } else {
+                System.out.println("Miss!");
+            }
+        }
+    }
+
+    private static boolean isGameWon(String[][] grid, String[] countryLocations) {
+        for (String location : countryLocations) {
+            int row = Integer.parseInt(location.split(",")[0]);
+            int col = Integer.parseInt(location.split(",")[1]);
+            if (grid[row][col] != null) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
